@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/shape_native"
+    android:padding="10dp"
+    android:orientation="vertical"
+    >
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ami title boltasi bhaiuya apni k ami jani nah>"
+        android:textSize="25dp"
+        android:maxLines="2"
+        android:ellipsize="end"
+        android:fontFamily="@font/tektur_medium"
+        android:textColor="@color/black"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ami title boltasi bhaiuya apni k ami jani nah>Ami title boltasi bhaiuya apni k ami jani nah>Ami title boltasi bhaiuya apni k ami jani nah>Ami title boltasi bhaiuya apni k ami jani nah>Ami title boltasi bhaiuya apni k ami jani nah>Ami title boltasi bhaiuya apni k ami jani nah>Ami title boltasi bhaiuya apni k ami jani nah>Ami title boltasi bhaiuya apni k ami jani nah>"
+        android:textSize="15dp"
+        android:maxLines="6"
+        android:ellipsize="end"
+        android:fontFamily="@font/tektur"
+        android:textColor="#99000000"
+        />
+</LinearLayout>
