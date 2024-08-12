@@ -1,7 +1,9 @@
 package com.siam.notify.Home;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -16,6 +18,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.siam.notify.Fragment.Help;
 import com.siam.notify.Fragment.Me;
 import com.siam.notify.Fragment.Note;
+import com.siam.notify.Noting.Noting;
 import com.siam.notify.R;
 
 public class Home extends AppCompatActivity {
@@ -49,6 +52,10 @@ public class Home extends AppCompatActivity {
                 return false;
             }
         });
+    }
+    public void onNewNote(View view) {
+        Intent i = new Intent(this, Noting.class);
+        startActivity(i);
     }
 
     private void frag(Fragment fragment) {

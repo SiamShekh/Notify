@@ -14,7 +14,9 @@
         android:padding="15dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
+        android:onClick="onNewNote"
         />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
