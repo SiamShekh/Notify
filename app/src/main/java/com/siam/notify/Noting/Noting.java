@@ -17,12 +17,15 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.siam.notify.R;
+import com.siam.notify.Room.Note.Database;
+import com.siam.notify.Room.Note.NoteEntity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 public class Noting extends AppCompatActivity {
@@ -67,7 +70,9 @@ public class Noting extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
-            Toast.makeText(this, ""+array.toString(), Toast.LENGTH_SHORT).show();
+            Long tsLong = System.currentTimeMillis() / 1000;
+            Date date = new Date(tsLong * 1000);
+            new Database().Database(this).InsertNote(new NoteEntity(array.toString(), date+""));
         });
     }
 

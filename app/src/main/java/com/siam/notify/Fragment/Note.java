@@ -20,6 +20,7 @@ public class Note extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_note, container, false);
 
+
         return view;
     }
 }

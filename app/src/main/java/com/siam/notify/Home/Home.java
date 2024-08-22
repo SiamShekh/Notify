@@ -20,6 +20,8 @@ import com.siam.notify.Fragment.Me;
 import com.siam.notify.Fragment.Note;
 import com.siam.notify.Noting.Noting;
 import com.siam.notify.R;
+import com.siam.notify.Room.Note.Database;
+import com.siam.notify.Room.Note.NoteEntity;
 
 public class Home extends AppCompatActivity {
 
@@ -52,6 +54,11 @@ public class Home extends AppCompatActivity {
                 return false;
             }
         });
+
+//        if (new Database().Database(this).getAllNote().isEmpty()){
+//        }
+        Toast.makeText(this, ""+new Database().Database(this).getAllNote().get(0).getNote(), Toast.LENGTH_SHORT).show();
+
     }
     public void onNewNote(View view) {
         Intent i = new Intent(this, Noting.class);
