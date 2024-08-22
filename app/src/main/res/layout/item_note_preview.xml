@@ -3,26 +3,102 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/shape_native"
-    android:padding="10dp"
-    >
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Ami title boltasi bhaiuya apni k ami jani nah>"
-        android:textSize="25dp"
-        android:maxLines="2"
-        android:ellipsize="end"
-        android:fontFamily="@font/tektur_medium"
-        android:textColor="@color/black"/>
+    android:orientation="vertical"
+    android:padding="10dp">
 
     <TextView
+        android:id="@+id/title_notePreview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Ami title boltasi bhaiuya apni k ami jani nah>Ami title boltasi bhaiuya apni k ami jani nah>Ami title boltasi bhaiuya apni k ami jani nah>Ami title boltasi bhaiuya apni k ami jani nah>Ami title boltasi bhaiuya apni k ami jani nah>Ami title boltasi bhaiuya apni k ami jani nah>Ami title boltasi bhaiuya apni k ami jani nah>Ami title boltasi bhaiuya apni k ami jani nah>"
-        android:textSize="15dp"
-        android:maxLines="6"
+        android:ellipsize="end"
+        android:fontFamily="@font/tektur_medium"
+        android:maxLines="2"
+        android:text="Ami title boltasi bhaiuya apni k ami jani nah>"
+        android:textColor="@color/black"
+        android:textSize="20dp" />
+
+    <TextView
+        android:id="@+id/description_notePreview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:ellipsize="end"
         android:fontFamily="@font/tektur"
+        android:maxLines="6"
+        android:text="Ami title boltasi bhaiuya apni k ami jani nah>Ami title boltasi bhaiuya apni k ami jani nah>Ami title boltasi bhaiuya apni k ami jani nah>Ami title boltasi bhaiuya apni k ami jani nah>Ami title boltasi bhaiuya apni k ami jani nah>Ami title boltasi bhaiuya apni k ami jani nah>Ami title boltasi bhaiuya apni k ami jani nah>Ami title boltasi bhaiuya apni k ami jani nah>"
         android:textColor="#99000000"
-        />
+        android:textSize="15dp"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/codeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/black"
+        android:orientation="vertical"
+        android:padding="10dp"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <View
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:background="@drawable/shape_red" />
+
+            <View
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_marginLeft="5dp"
+                android:background="@drawable/shape_circle" />
+
+            <View
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_marginLeft="5dp"
+                android:background="@drawable/shape_green" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/codeText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text=""
+            android:textAlignment="textStart"
+            android:textColor="@color/white" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/Todo_Layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        android:weightSum="10">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_weight="1">
+
+            <View
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:background="@drawable/shape_circle" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/todoText"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="9"
+            android:text="Ami k jeno"
+            />
+    </LinearLayout>
+
 </LinearLayout>

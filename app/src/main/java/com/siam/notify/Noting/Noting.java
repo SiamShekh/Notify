@@ -56,24 +56,40 @@ public class Noting extends AppCompatActivity {
         buttonTodo.setOnClickListener(v -> addEditText("Todo"));
 
         save_btn.setOnClickListener(v -> {
-            captureAllEditTextValues();
-            JSONArray array = new JSONArray();
-
-            for (int i =0; i < arrayList.size() ; i++ ) {
-                JSONObject object = new JSONObject();
-                try {
-                    object.put("type", arrayList.get(i).get("type"));
-                    object.put("no" , arrayList.get(i).get("no"));
-                    object.put("note" , arrayList.get(i).get("note"));
-                    array.put(object);
-                }catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-            Long tsLong = System.currentTimeMillis() / 1000;
-            Date date = new Date(tsLong * 1000);
-            new Database().Database(this).InsertNote(new NoteEntity(array.toString(), date+""));
+            saveNote();
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        saveNote();
+    }
+
+    private void saveNote (){
+        EditText title_edt = findViewById(R.id.title_edt);
+        captureAllEditTextValues();
+        JSONArray array = new JSONArray();
+
+        for (int i =0; i < arrayList.size() ; i++ ) {
+            JSONObject object = new JSONObject();
+            try {
+                object.put("type", arrayList.get(i).get("type"));
+                object.put("no" , arrayList.get(i).get("no"));
+                object.put("note" , arrayList.get(i).get("note"));
+                array.put(object);
+            }catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        String titleStr = title_edt.getText().toString();
+        Long tsLong = System.currentTimeMillis() / 1000;
+        Date date = new Date(tsLong * 1000);
+        try {
+            new Database().Database(this).InsertNote(new NoteEntity(titleStr, array.toString(), date+""));
+        } finally {
+            Toast.makeText(this, "Note Saved", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @SuppressLint("ResourceAsColor")

@@ -8,6 +8,7 @@
     android:padding="10dp">
 
     <EditText
+        android:id="@+id/title_edt"
         android:layout_width="match_parent"
         android:layout_height="80dp"
         android:fontFamily="@font/tektur_medium"

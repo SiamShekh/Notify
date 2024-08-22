@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:padding="10dp"
     tools:context=".Fragment.Note">
 
@@ -58,14 +59,26 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="vertical"
         android:layout_marginTop="?attr/actionBarSize">
 
-<!--        <androidx.recyclerview.widget.RecyclerView-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="match_parent"-->
-<!--            android:layout_marginTop="?attr/actionBarSize" />-->
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/no_data"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            app:lottie_rawRes="@raw/no_data"
+            app:lottie_autoPlay="true"
+            android:visibility="gone"
+            app:lottie_loop="true"/>
 
-        <include layout="@layout/item_note_preview" />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerItems"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            />
+
+<!--        <include layout="@layout/item_note_preview" />-->
     </LinearLayout>
 
 </RelativeLayout>
