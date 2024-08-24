@@ -7,14 +7,14 @@
     android:padding="10dp"
     tools:context=".Fragment.Note">
 
-    <ImageView
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/onNewNote"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:src="@drawable/icon_plus"
-        android:background="@drawable/shape_circle"
         android:padding="15dp"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:onClick="onNewNote"
         />
 

@@ -41,10 +41,9 @@ dependencies {
 
     def room_version = "2.6.1"
 
-    implementation "androidx.room:room-runtime:$room_version"
+    implementation libs.room.runtime
     annotationProcessor "androidx.room:room-compiler:$room_version"
 
-    def lottieVersion = "3.4.0"
-    implementation "com.airbnb.android:lottie:$lottieVersion"
+    implementation libs.lottie
 
 }

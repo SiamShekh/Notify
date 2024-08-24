@@ -86,6 +86,8 @@ public class Note extends Fragment {
             NoteItem NoteHolder = (NoteItem) holder;
 
             NoteEntity note = NoteArrayList.get(position);
+            NoteHolder.title_notePreview.setText(note.getTitle()+" ");
+
             try {
                 JSONArray noteArray = new JSONArray(note.getNote());
                 JSONObject noteObj = noteArray.getJSONObject(0);

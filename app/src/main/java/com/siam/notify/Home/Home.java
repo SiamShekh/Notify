@@ -2,7 +2,6 @@ package com.siam.notify.Home;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
@@ -21,8 +20,6 @@ import com.siam.notify.Fragment.Me;
 import com.siam.notify.Fragment.Note;
 import com.siam.notify.Noting.Noting;
 import com.siam.notify.R;
-import com.siam.notify.Room.Note.Database;
-import com.siam.notify.Room.Note.NoteEntity;
 
 public class Home extends AppCompatActivity {
 
@@ -36,6 +33,8 @@ public class Home extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+
 
         frag(new Note());
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation_native);
@@ -56,14 +55,12 @@ public class Home extends AppCompatActivity {
             }
         });
 
-//        if (new Database().Database(this).getAllNote().isEmpty()){
-//        }
-//        Toast.makeText(this, ""+, Toast.LENGTH_SHORT).show();
     }
     public void onNewNote(View view) {
         Intent i = new Intent(this, Noting.class);
         startActivity(i);
     }
+
 
     private void frag(Fragment fragment) {
         getSupportFragmentManager()
