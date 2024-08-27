@@ -20,7 +20,7 @@ public interface NoteDAO {
     List<NoteEntity> getAllNote();
 
     @Query("DELETE FROM note WHERE id = :id")
-    void deleteSingleNote(String id);
+    void deleteSingleNote(int id);
 
     @Query("DELETE FROM note")
     void deleteAllNotes();
@@ -28,10 +28,8 @@ public interface NoteDAO {
     @Query("SELECT * FROM note WHERE title LIKE '%' || :title || '%'")
     List<NoteEntity> getSearchList(String title);
 
-
-
-    @Query("UPDATE note SET note = :note AND timestamp=:time WHERE id = :id")
-    void updateNote(int id, String note, String time);
+    @Query("UPDATE note SET note = :note, timestamp = :time, title = :title WHERE id = :id")
+    void updateNote(int id, String note, String title, String time);
 
 
 }

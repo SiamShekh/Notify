@@ -3,7 +3,9 @@ package com.siam.notify.Noting;
 import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -40,6 +42,7 @@ public class Noting extends AppCompatActivity {
     public static int NoteId = 0;
     NoteEntity noteItem;
     EditText title_edt;
+
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,23 +65,67 @@ public class Noting extends AppCompatActivity {
         Button buttonCode = findViewById(R.id.button_code);
         Button buttonTodo = findViewById(R.id.button_todo);
         title_edt = findViewById(R.id.title_edt);
-        title_edt.setText(noteItem.getTitle()+"");
+        if (NoteId != 0) {
+            title_edt.setText(noteItem.getTitle() + "");
+        }
 
-        buttonText.setOnClickListener(v -> addEditText("Text"));
-        buttonCode.setOnClickListener(v -> addEditText("Code"));
-        buttonTodo.setOnClickListener(v -> addEditText("Todo"));
+        buttonText.setOnClickListener(v -> addEditText("Text", ""));
+        buttonCode.setOnClickListener(v -> addEditText("Code", ""));
+        buttonTodo.setOnClickListener(v -> addEditText("Todo", ""));
 
         save_btn.setOnClickListener(v -> {
-            saveNote();
+            if (!title_edt.getText().toString().isEmpty()) {
+                if (NoteId == 0) {
+                    saveNote();
+                } else {
+                    updateNote();
+                }
+            }else {
+                Toast.makeText(this, "No Content!", Toast.LENGTH_SHORT).show();
+            }
         });
 
-        try {
-            JSONArray NoteArr = new JSONArray(noteItem.getNote());
-            for (int i = 0; i < NoteArr.length(); i++) {
-                Log.d("This is inspact: ", String.valueOf(NoteArr.getJSONObject(i)));
+        if (NoteId != 0) {
+            try {
+                JSONArray NoteArr = new JSONArray(noteItem.getNote());
+                for (int i = 0; i < NoteArr.length(); i++) {
+
+                    String type = NoteArr.getJSONObject(i).getString("type");
+                    String note = NoteArr.getJSONObject(i).getString("note");
+                    addEditText(type, note);
+                }
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
             }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
+        }
+    }
+
+    private void updateNote() {
+        captureAllEditTextValues();
+        JSONArray array = new JSONArray();
+
+        for (int i = 0; i < arrayList.size(); i++) {
+            JSONObject object = new JSONObject();
+            try {
+                object.put("type", arrayList.get(i).get("type"));
+                object.put("no", arrayList.get(i).get("no"));
+                object.put("note", arrayList.get(i).get("note"));
+                array.put(object);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        String titleStr = title_edt.getText().toString();
+        Long tsLong = System.currentTimeMillis() / 1000;
+        Date date = new Date(tsLong * 1000);
+        try {
+            if (!array.isNull(0)) {
+                new Database().Database(this).updateNote(NoteId, array.toString(), titleStr, date + "");
+            } else {
+                Toast.makeText(this, "Content is empty!", Toast.LENGTH_SHORT).show();
+            }
+        } finally {
+            Toast.makeText(this, "Note Updated", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -102,14 +149,18 @@ public class Noting extends AppCompatActivity {
         Long tsLong = System.currentTimeMillis() / 1000;
         Date date = new Date(tsLong * 1000);
         try {
-            new Database().Database(this).InsertNote(new NoteEntity(titleStr, array.toString(), date + ""));
+            if (!array.isNull(0)) {
+                new Database().Database(this).InsertNote(new NoteEntity(titleStr, array.toString(), date + ""));
+            } else {
+                Toast.makeText(this, "Content is empty!", Toast.LENGTH_SHORT).show();
+            }
         } finally {
             Toast.makeText(this, "Note Saved", Toast.LENGTH_SHORT).show();
         }
     }
 
     @SuppressLint("ResourceAsColor")
-    private void addEditText(String type) {
+    private void addEditText(String type, String note) {
         HashMap<String, String> hashMap = new HashMap<>();
 
         if (type.equals("Todo")) {
@@ -153,6 +204,10 @@ public class Noting extends AppCompatActivity {
             newEditText.setGravity(Gravity.CENTER_VERTICAL);
             newEditText.setBackgroundColor(Color.parseColor("#00000000"));
             newEditText.setHint("Todo");
+            if (NoteId != 0) {
+                newEditText.setText(note);
+            }
+
             newEditText.setTextSize(16);
             newEditText.setPadding(10, 10, 10, 10);
 
@@ -178,7 +233,12 @@ public class Noting extends AppCompatActivity {
             newLinearLayout.addView(closeParents);
 
             dynamicContainer.addView(newLinearLayout);
-            closeImg.setOnClickListener(v -> dynamicContainer.removeView(newLinearLayout));
+            closeImg.setOnClickListener(v -> {
+                        dynamicContainer.removeView(newLinearLayout);
+                        arrayList.remove(hashMap);
+
+                    }
+            );
             // Store references and type in HashMap
             hashMap.put("type", "Todo");
             hashMap.put("no", String.valueOf(arrayList.size()));
@@ -186,6 +246,21 @@ public class Noting extends AppCompatActivity {
             arrayList.add(hashMap);
 
             newEditText.setTag(hashMap);
+            newEditText.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    hashMap.put("note", s.toString());
+                }
+            });
+
         } else if (type.equals("Code")) {
             LinearLayout codeParents = new LinearLayout(this);
             LinearLayout.LayoutParams codeEditorParams = new LinearLayout.LayoutParams(
@@ -204,7 +279,9 @@ public class Noting extends AppCompatActivity {
             );
             params.setMargins(0, 5, 0, 0);
             newEditText.setLayoutParams(params);
-
+            if (NoteId != 0) {
+                newEditText.setText(note);
+            }
             newEditText.setHint("Code");
             newEditText.setTextSize(16);
             newEditText.setBackgroundColor(Color.parseColor("#00000000"));
@@ -223,42 +300,7 @@ public class Noting extends AppCompatActivity {
             ColorsHeaderCodeEditLinner.setOrientation(LinearLayout.HORIZONTAL);
             ColorsHeaderCodeEditLinner.setWeightSum(2);
 
-            LinearLayout codeHeaderColorsParents = new LinearLayout(this);
-            LinearLayout.LayoutParams codeHeaderColorsParentsParams = new LinearLayout.LayoutParams(
-                    0,
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    1f
-            );
-            codeHeaderColorsParents.setLayoutParams(codeHeaderColorsParentsParams);
-            codeHeaderColorsParents.setOrientation(LinearLayout.HORIZONTAL);
-
-            View RedColors = new View(this);
-            LinearLayout.LayoutParams RedColorsParams = new LinearLayout.LayoutParams(
-                    50,
-                    50
-            );
-            RedColors.setBackgroundResource(R.drawable.shape_red);
-            RedColors.setLayoutParams(RedColorsParams);
-            codeHeaderColorsParents.addView(RedColors);
-
-            View YellowColors = new View(this);
-            LinearLayout.LayoutParams YellowColorsParams = new LinearLayout.LayoutParams(
-                    50,
-                    50
-            );
-            YellowColorsParams.setMargins(20, 0, 20, 0);
-            YellowColors.setBackgroundResource(R.drawable.shape_circle);
-            YellowColors.setLayoutParams(YellowColorsParams);
-            codeHeaderColorsParents.addView(YellowColors);
-
-            View GreensColors = new View(this);
-            LinearLayout.LayoutParams GreensColorsParams = new LinearLayout.LayoutParams(
-                    50,
-                    50
-            );
-            GreensColors.setBackgroundResource(R.drawable.shape_green);
-            GreensColors.setLayoutParams(GreensColorsParams);
-            codeHeaderColorsParents.addView(GreensColors);
+            LinearLayout codeHeaderColorsParents = getLayout();
             ColorsHeaderCodeEditLinner.addView(codeHeaderColorsParents);
 
             LinearLayout closeCodeBlock = new LinearLayout(this);
@@ -287,16 +329,16 @@ public class Noting extends AppCompatActivity {
             dynamicContainer.addView(codeParents);
 
             closeImg.setOnClickListener(v -> {
+                arrayList.remove(hashMap);
                 dynamicContainer.removeView(codeParents);
             });
 
-            // Store references and type in HashMap
             hashMap.put("type", type);
             hashMap.put("no", String.valueOf(arrayList.size()));
-            hashMap.put("note", "");  // Initially empty, will be captured on save
+            hashMap.put("note", "");
             arrayList.add(hashMap);
 
-            newEditText.setTag(hashMap);  // Attach the HashMap to the EditText as a tag for later retrieval
+            newEditText.setTag(hashMap);
         } else {
             LinearLayout textParents = new LinearLayout(this);
             LinearLayout.LayoutParams textParentParams = new LinearLayout.LayoutParams(
@@ -308,7 +350,6 @@ public class Noting extends AppCompatActivity {
             textParents.setWeightSum(10);
             textParents.setGravity(Gravity.CENTER_VERTICAL);
 
-            // Cut edit text
             LinearLayout deleteImageParents = new LinearLayout(this);
             LinearLayout.LayoutParams deleteImageParentsParams = new LinearLayout.LayoutParams(
                     0,
@@ -338,6 +379,7 @@ public class Noting extends AppCompatActivity {
             textParents.addView(deleteImageParents);
 
             deleteImage.setOnClickListener(v -> {
+                arrayList.remove(hashMap);
                 dynamicContainer.removeView(textParents);
             });
 
@@ -347,10 +389,11 @@ public class Noting extends AppCompatActivity {
             newEditText.setTextSize(16);
             newEditText.setBackgroundColor(Color.parseColor("#00000000"));
             newEditText.setPadding(10, 10, 10, 10);
-
+            if (NoteId != 0) {
+                newEditText.setText(note);
+            }
             dynamicContainer.addView(textParents);
 
-            // Store references and type in HashMap
             hashMap.put("type", type);
             hashMap.put("no", String.valueOf(arrayList.size()));
             hashMap.put("note", "");  // Initially empty, will be captured on save
@@ -360,6 +403,52 @@ public class Noting extends AppCompatActivity {
         }
     }
 
+    @NonNull
+    private LinearLayout getLayout() {
+        LinearLayout codeHeaderColorsParents = new LinearLayout(this);
+        LinearLayout.LayoutParams codeHeaderColorsParentsParams = new LinearLayout.LayoutParams(
+                0,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                1f
+        );
+        codeHeaderColorsParents.setLayoutParams(codeHeaderColorsParentsParams);
+        codeHeaderColorsParents.setOrientation(LinearLayout.HORIZONTAL);
+
+        View RedColors = new View(this);
+        LinearLayout.LayoutParams RedColorsParams = new LinearLayout.LayoutParams(
+                50,
+                50
+        );
+        RedColors.setBackgroundResource(R.drawable.shape_red);
+        RedColors.setLayoutParams(RedColorsParams);
+        codeHeaderColorsParents.addView(RedColors);
+
+        View YellowColors = new View(this);
+        LinearLayout.LayoutParams YellowColorsParams = new LinearLayout.LayoutParams(
+                50,
+                50
+        );
+        YellowColorsParams.setMargins(20, 0, 20, 0);
+        YellowColors.setBackgroundResource(R.drawable.shape_circle);
+        YellowColors.setLayoutParams(YellowColorsParams);
+        codeHeaderColorsParents.addView(YellowColors);
+
+        View GreensColors = new View(this);
+        LinearLayout.LayoutParams GreensColorsParams = new LinearLayout.LayoutParams(
+                50,
+                50
+        );
+        GreensColors.setBackgroundResource(R.drawable.shape_green);
+        GreensColors.setLayoutParams(GreensColorsParams);
+        codeHeaderColorsParents.addView(GreensColors);
+        return codeHeaderColorsParents;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        NoteId = 0;
+    }
 
     private void captureAllEditTextValues() {
         for (int i = 0; i < dynamicContainer.getChildCount(); i++) {
@@ -372,7 +461,7 @@ public class Noting extends AppCompatActivity {
                         EditText editText = (EditText) childView;
                         HashMap<String, String> map = (HashMap<String, String>) editText.getTag();
                         if (map != null) {
-                            map.put("note", editText.getText().toString());  // Update the value in the map
+                            map.put("note", editText.getText().toString());
                         }
                     }
                 }
@@ -380,7 +469,7 @@ public class Noting extends AppCompatActivity {
                 EditText editText = (EditText) view;
                 HashMap<String, String> map = (HashMap<String, String>) editText.getTag();
                 if (map != null) {
-                    map.put("note", editText.getText().toString());  // Update the value in the map
+                    map.put("note", editText.getText().toString());
                 }
             }
         }

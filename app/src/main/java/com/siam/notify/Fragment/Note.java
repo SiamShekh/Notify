@@ -10,10 +10,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,11 +44,11 @@ public class Note extends Fragment {
         View view = inflater.inflate(R.layout.fragment_note, container, false);
         NoteList = view.findViewById(R.id.recyclerItems);
         no_data = view.findViewById(R.id.no_data);
-        NoteArrayList = new Database().Database(requireActivity()).getAllNote();
 
+        NoteArrayList = new Database().Database(requireActivity()).getAllNote();
         NoteListAdapter listAdapter = new NoteListAdapter();
         NoteList.setAdapter(listAdapter);
-        //TODO: new Database().Database(this).getAllNote().isEmpty() (if its true then the database is empty and if is false then the database is have data)
+
         EditText searchEdit = view.findViewById(R.id.editNoteSearch);
         searchEdit.addTextChangedListener(new TextWatcher() {
             @Override
@@ -86,7 +88,7 @@ public class Note extends Fragment {
         public class NoteItem extends RecyclerView.ViewHolder {
             TextView description_notePreview, title_notePreview, todoText, codeText;
             LinearLayout Todo_Layout, codeLayout, mainNote;
-
+            ImageView delete_note;
             public NoteItem(@NonNull View itemView) {
                 super(itemView);
                 description_notePreview = itemView.findViewById(R.id.description_notePreview);
@@ -96,6 +98,7 @@ public class Note extends Fragment {
                 todoText = itemView.findViewById(R.id.todoText);
                 codeText = itemView.findViewById(R.id.codeText);
                 mainNote = itemView.findViewById(R.id.mainNote);
+                delete_note = itemView.findViewById(R.id.delete_note);
 
             }
         }
@@ -114,6 +117,12 @@ public class Note extends Fragment {
             NoteEntity note = NoteArrayList.get(position);
             NoteHolder.title_notePreview.setText(note.getTitle()+" ");
 
+            NoteHolder.delete_note.setOnClickListener(v -> {
+                new Database().Database(requireActivity()).deleteSingleNote(note.getId());
+                Toast.makeText(requireActivity(), "Note Deleted", Toast.LENGTH_SHORT).show();
+                reloadNotes();
+            });
+
             NoteHolder.mainNote.setOnClickListener(v -> {
                 Intent i = new Intent(requireActivity(), Noting.class);
                 Noting.NoteId = note.getId();
@@ -122,6 +131,7 @@ public class Note extends Fragment {
 
             try {
                 JSONArray noteArray = new JSONArray(note.getNote());
+                Log.d("AMITOMILOG", "onBindViewHolder: "+ noteArray.toString());
                 JSONObject noteObj = noteArray.getJSONObject(0);
                 String noteText = noteObj.getString("note");
                 String type = noteObj.getString("type");
@@ -157,5 +167,28 @@ public class Note extends Fragment {
         public int getItemCount() {
             return NoteArrayList.size();
         }
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        reloadNotes();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        reloadNotes();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        reloadNotes();
+    }
+
+    private void reloadNotes() {
+        NoteArrayList = new Database().Database(requireActivity()).getAllNote();
+        NoteListAdapter listAdapter = new NoteListAdapter();
+        NoteList.setAdapter(listAdapter);
     }
 }
