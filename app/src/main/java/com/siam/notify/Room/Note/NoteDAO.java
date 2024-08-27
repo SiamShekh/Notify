@@ -14,7 +14,7 @@ public interface NoteDAO {
     void InsertNote(NoteEntity note);
 
     @Query("SELECT * FROM note WHERE id=:id")
-    NoteEntity getNoteById(String id);
+    NoteEntity getNoteById(int id);
 
     @Query("SELECT * FROM note")
     List<NoteEntity> getAllNote();
@@ -24,6 +24,10 @@ public interface NoteDAO {
 
     @Query("DELETE FROM note")
     void deleteAllNotes();
+
+    @Query("SELECT * FROM note WHERE title LIKE '%' || :title || '%'")
+    List<NoteEntity> getSearchList(String title);
+
 
 
     @Query("UPDATE note SET note = :note AND timestamp=:time WHERE id = :id")

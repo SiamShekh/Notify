@@ -8,11 +8,15 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.siam.notify.Noting.Noting;
@@ -29,6 +33,7 @@ import java.util.List;
 public class Note extends Fragment {
     RecyclerView NoteList;
     LottieAnimationView no_data;
+    List<NoteEntity> NoteArrayList;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -37,16 +42,36 @@ public class Note extends Fragment {
         View view = inflater.inflate(R.layout.fragment_note, container, false);
         NoteList = view.findViewById(R.id.recyclerItems);
         no_data = view.findViewById(R.id.no_data);
+        NoteArrayList = new Database().Database(requireActivity()).getAllNote();
 
         NoteListAdapter listAdapter = new NoteListAdapter();
         NoteList.setAdapter(listAdapter);
         //TODO: new Database().Database(this).getAllNote().isEmpty() (if its true then the database is empty and if is false then the database is have data)
+        EditText searchEdit = view.findViewById(R.id.editNoteSearch);
+        searchEdit.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                NoteArrayList = new Database().Database(requireActivity()).getSearchList(s.toString()+" ");
+                NoteListAdapter listAdapter = new NoteListAdapter();
+                NoteList.setAdapter(listAdapter);
+                Toast.makeText(requireActivity(), ""+s.toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
 
         return view;
     }
 
     private class NoteListAdapter extends RecyclerView.Adapter {
-        List<NoteEntity> NoteArrayList = new Database().Database(requireActivity()).getAllNote();
 
         public NoteListAdapter() {
             if (NoteArrayList.isEmpty()) {
@@ -60,7 +85,7 @@ public class Note extends Fragment {
 
         public class NoteItem extends RecyclerView.ViewHolder {
             TextView description_notePreview, title_notePreview, todoText, codeText;
-            LinearLayout Todo_Layout, codeLayout;
+            LinearLayout Todo_Layout, codeLayout, mainNote;
 
             public NoteItem(@NonNull View itemView) {
                 super(itemView);
@@ -70,6 +95,7 @@ public class Note extends Fragment {
                 codeLayout = itemView.findViewById(R.id.codeLayout);
                 todoText = itemView.findViewById(R.id.todoText);
                 codeText = itemView.findViewById(R.id.codeText);
+                mainNote = itemView.findViewById(R.id.mainNote);
 
             }
         }
@@ -87,6 +113,12 @@ public class Note extends Fragment {
 
             NoteEntity note = NoteArrayList.get(position);
             NoteHolder.title_notePreview.setText(note.getTitle()+" ");
+
+            NoteHolder.mainNote.setOnClickListener(v -> {
+                Intent i = new Intent(requireActivity(), Noting.class);
+                Noting.NoteId = note.getId();
+                startActivity(i);
+            });
 
             try {
                 JSONArray noteArray = new JSONArray(note.getNote());

@@ -37,7 +37,9 @@ public class Noting extends AppCompatActivity {
     private LinearLayout dynamicContainer;
     private Button save_btn;
     private ArrayList<HashMap<String, String>> arrayList = new ArrayList<>();
-
+    public static int NoteId = 0;
+    NoteEntity noteItem;
+    EditText title_edt;
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,11 +52,17 @@ public class Noting extends AppCompatActivity {
             return insets;
         });
 
+        if (NoteId != 0) {
+            noteItem = new Database().Database(this).getNoteById(NoteId);
+        }
+
         dynamicContainer = findViewById(R.id.dynamic_container);
         save_btn = findViewById(R.id.save_btn);
         Button buttonText = findViewById(R.id.button_text);
         Button buttonCode = findViewById(R.id.button_code);
         Button buttonTodo = findViewById(R.id.button_todo);
+        title_edt = findViewById(R.id.title_edt);
+        title_edt.setText(noteItem.getTitle()+"");
 
         buttonText.setOnClickListener(v -> addEditText("Text"));
         buttonCode.setOnClickListener(v -> addEditText("Code"));
@@ -63,11 +71,19 @@ public class Noting extends AppCompatActivity {
         save_btn.setOnClickListener(v -> {
             saveNote();
         });
+
+        try {
+            JSONArray NoteArr = new JSONArray(noteItem.getNote());
+            for (int i = 0; i < NoteArr.length(); i++) {
+                Log.d("This is inspact: ", String.valueOf(NoteArr.getJSONObject(i)));
+            }
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
     private void saveNote() {
-        EditText title_edt = findViewById(R.id.title_edt);
         captureAllEditTextValues();
         JSONArray array = new JSONArray();
 

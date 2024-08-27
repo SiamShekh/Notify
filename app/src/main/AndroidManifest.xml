@@ -13,6 +13,9 @@
         android:theme="@style/Theme.Notify"
         tools:targetApi="31">
         <activity
+            android:name=".Details.Details"
+            android:exported="false" />
+        <activity
             android:name=".Noting.Noting"
             android:exported="false" />
         <activity
