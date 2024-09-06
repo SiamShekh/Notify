@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "748489459788",
+    "project_id": "notify-c13d9",
+    "storage_bucket": "notify-c13d9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:748489459788:android:900bee1fe3e69922b80ce9",
+        "android_client_info": {
+          "package_name": "com.siam.notify"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAZbEQBJNTbFSHLL6doumLuaHE47hlJAnQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
