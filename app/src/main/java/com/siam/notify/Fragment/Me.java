@@ -8,6 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -26,6 +28,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.siam.notify.R;
+import com.squareup.picasso.Picasso;
+
+import java.util.Objects;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class Me extends Fragment {
 
@@ -37,7 +44,11 @@ public class Me extends Fragment {
     // [END declare_auth]
 
     private GoogleSignInClient mGoogleSignInClient;
+    LinearLayout requiredLogin_mode, login_btn, logged_mode,logout_btn;
+    CircleImageView profileImg;
+    TextView name_text, email_text, phone_text;
 
+    @SuppressLint("MissingInflatedId")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -49,16 +60,28 @@ public class Me extends Fragment {
                 .build();
 
         mGoogleSignInClient = GoogleSignIn.getClient(requireActivity(), gso);
-        // [END config_signin]
+        requiredLogin_mode = view.findViewById(R.id.requiredLogin_mode);
+        login_btn = view.findViewById(R.id.login_btn);
+        logged_mode = view.findViewById(R.id.logged_mode);
+        profileImg = view.findViewById(R.id.profileImg);
+        name_text = view.findViewById(R.id.name);
+        phone_text = view.findViewById(R.id.phone);
+        email_text = view.findViewById(R.id.email);
+        logout_btn = view.findViewById(R.id.logout_btn);
 
-        // [START initialize_auth]
-        // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
-        @SuppressLint({"MissingInflatedId", "LocalSuppress"}) Button login = view.findViewById(R.id.login);
-        login.setOnClickListener(new View.OnClickListener() {
+        login_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 signIn();
+            }
+        });
+        logout_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FirebaseAuth.getInstance().signOut();
+                FirebaseUser user = mAuth.getCurrentUser();
+                updateUI(user);
             }
         });
         return view;
@@ -67,7 +90,6 @@ public class Me extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
         updateUI(currentUser);
     }
@@ -115,11 +137,24 @@ public class Me extends Fragment {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
-    // [END signin]
 
     private void updateUI(FirebaseUser user) {
         if (user != null) {
-            Toast.makeText(requireActivity(), user.getDisplayName(), Toast.LENGTH_SHORT).show();
+            logged_mode.setVisibility(View.VISIBLE);
+            requiredLogin_mode.setVisibility(View.GONE);
+
+            Picasso
+                    .get()
+                    .load(user.getPhotoUrl())
+                    .into(profileImg);
+
+            name_text.setText(user.getDisplayName());
+            email_text.setText(user.getEmail());
+            if (!Objects.equals(user.getPhoneNumber(), "")){
+                phone_text.setText(user.getPhoneNumber());
+            }else {
+                phone_text.setText("Hidden");
+            }
         }
     }
 }
